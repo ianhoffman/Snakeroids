@@ -2,13 +2,13 @@
 
 ## Background
 
-SpaceExplorer is loosly modeled on the classic arcade game Asteroids. However, instead of destroying Asteroids, the objective is to avoid obstacles and collect fuel-sources. 
+SpaceExplorer is loosly modeled on the classic arcade game Asteroids. However, instead of destroying Asteroids, the objective is to avoid obstacles and collect power-sources. When a player collects a level-determined number of power sources, they advance to the next level.
 
 The player moves with WSAD or &uarr;, &darr;, &rarr;, and &larr;. AD and &rarr; and &larr; do not move the ship but rotate it. 
 
-The player loses by either colliding with an obstacle that is not a fuel source, or by running out of fuel.
+The player loses by colliding with an obstacle that is not a power source.
 
-SpaceExplorer is played on an infinitely large screen; as the player moves, the viewport scrolls, generating obstacles and fuel-sources.
+SpaceExplorer is played on an infinitely large screen; as the player moves, the viewport scrolls, generating obstacles and power-sources.
 
 
 ## Functionality & MVP
@@ -16,8 +16,8 @@ SpaceExplorer is played on an infinitely large screen; as the player moves, the 
 The player will be able to: 
 
 * Move the ship using WSAD or &uarr;, &darr;, &rarr;, and &larr.
-* Collect fuel sources by colliding with them.
-* Lose the game by collision with an obstacle or running out of fuel.
+* Find power sources to win (the number you must find goes up every level).
+* Lose the game by collision with a non-power source obstacle.
 * Explore more 'space' by moving towards the edges of the viewport.
 
 In addition, the project will include:
@@ -28,7 +28,7 @@ In addition, the project will include:
 
 ## Wireframes
 
-This app will consist of a single screen with a viewport, header and links to github and my linkedIn page. The game controls and rules are simple enough that they only need to be displayed once, on start. The viewport will also render a 'fuel bar' which decreases over time, but can be replenished by collecting fuel sources. 
+This app will consist of a single screen with a viewport, header and links to github and my linkedIn page. The game controls and rules are simple enough that they only need to be displayed once, on start. The viewport will also render a count of the power sources that the player must collect to win.
 
 ![Space Explorer Wireframe](./docs/SpaceExplorer.png "Space Explorer Wireframe")
 
@@ -42,19 +42,21 @@ SpaceExplorer will be implemented with the following technologies:
 * `HTML5 Canvas` for DOM manipulation and rendering;
 * Webpack to bundle and serve up the various scripts.
 
-In addition to the Webpack entry file, there will be six scripts involved in this project: 
+In addition to the Webpack entry file, there will be seven scripts involved in this project: 
+
+`game_view.js`: This script will handle the logic for advancing levels and beginning the game.
 
 `game.js`: This script will handle logic for creating and updating the `canvas` elements and rendering them to the DOM;
 
-`movingObject.js`: This superclass will house logic shared across all the following subclasses, such as an initial `position`, a `move` function, and a `draw` function which paints the `movingObject` onto the canvas. Collision events will also be handled here. 
+`moving_object.js`: This superclass will house logic shared across all the following subclasses, such as an initial `position`, a `move` function, and a `draw` function which paints the `movingObject` onto the canvas. Collision events will also be handled here. 
 
-`spaceShip.js`: This subclass will maintain a `fuelStatus`, a speed, a size, and register eventHandlers for ship movement.
+`space_ship.js`: This subclass will maintain a `powerSource` count, a speed, a size, and register eventHandlers for ship movement.
 
 `asteroid.js`: This subclass will maintain a speed and a size.
 
 `planet.js`: This subclass will maintain a size. 
 
-`fuelSource.js`: This subclass will maintain a size. 
+`power_source.js`: This subclass will maintain a size. 
 
 
 ## Implementation Timeline
@@ -68,10 +70,9 @@ In addition to the Webpack entry file, there will be six scripts involved in thi
 * Be able to move ship around the canvas.
 * Asteroids move.
 
-**Day 3:** Implement logic that scrolls the screen if the ship gets too near one edge. Write `fuelSource.js` and handle the logic behind running out of fuel / colliding with a fuel source.
+**Day 3:** Implement logic that scrolls the screen if the ship gets too near one edge. Write `powerSource.js` and handle the logic collecting power sources and advancing to the next level.
 
-* Be able to collect fuel.
-* Be able to lose when running out of fuel.
+* Be able to win by collect powerSources.
 * Be able to explore more space by moving towards the edge of the canvas. 
 
 **Day 4:** Style the frontend, making it polished and professional.
@@ -85,5 +86,6 @@ In addition to the Webpack entry file, there will be six scripts involved in thi
 
 There are many directions to go with bonus features:
 
-* Power ups: on collision with a power-up, increase speed or allow the player to have a temporary 'shield', or even allow the player to temporarily 'shoot' and destroy asteroids.
-* Saving: since this is not really a game you 'win', the satisfaction lies in exploring more of space. Therefore, it would be satisfying to save your gamestate..
+* Power ups: on collision with a power-source, increase speed or allow the player to have a temporary 'shield', or even allow the player to temporarily 'shoot' and destroy asteroids.
+* Fuel: implement fuel sources. If the player runs out of fuel, they lose.
+* Saving: since this is not really a game you 'win', the satisfaction lies in exploring more of space. Therefore, it would be satisfying to save your gamestate.

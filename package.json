@@ -1,0 +1,27 @@
+{
+  "name": "SpaceExplorer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "entry.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "webpack": "^2.6.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ianhoffman/SpaceExplorer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ianhoffman/SpaceExplorer/issues"
+  },
+  "homepage": "https://github.com/ianhoffman/SpaceExplorer#readme"
+}

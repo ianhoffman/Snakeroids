@@ -86,4 +86,4 @@ In addition to the Webpack entry file, there will be six scripts involved in thi
 There are many directions to go with bonus features:
 
 * Power ups: on collision with a power-up, increase speed or allow the player to have a temporary 'shield', or even allow the player to temporarily 'shoot' and destroy asteroids.
-* Saving: since this is not really a game you 'win', the satisfaction lies in exploring more of space. Therefore, it would be satisfying to save your gamestate.
+* Saving: since this is not really a game you 'win', the satisfaction lies in exploring more of space. Therefore, it would be satisfying to save your gamestate..

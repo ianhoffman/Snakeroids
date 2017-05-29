@@ -1,3 +1,19 @@
 body {
     margin: 0px;
 }
+
+canvas {
+    image-rendering: optimizeSpeed;             
+    image-rendering: -moz-crisp-edges;          
+    image-rendering: -webkit-optimize-contrast; 
+    image-rendering: -o-crisp-edges;            
+    image-rendering: crisp-edges;               
+    -ms-interpolation-mode: nearest-neighbor;   
+}
+
+img {
+    image-rendering: -moz-crisp-edges;         /* Firefox */
+    image-rendering: -webkit-crisp-edges;      /* Webkit */
+    -ms-interpolation-mode: nearest-neighbor;  /* IE (non-standard property) */
+    image-rendering: pixelated;                /* Chrome */
+}

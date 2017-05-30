@@ -26,7 +26,7 @@ In addition, the project will include:
 
 ## Wireframes
 
-This app will consist of a single screen with a viewport, header and links to github and my linkedIn page. The game controls and rules are simple enough that they only need to be displayed once, on start. The viewport will also render a count of the power sources that the player must collect to win.
+This app will consist of a single screen with a viewport, header and links to github and my linkedIn page. The game controls and rules are simple enough that they only need to be displayed once, on start. The viewport will also render a count of the power sources that the player must collect to pass the level.
 
 ![Space Explorer Wireframe](./docs/SpaceExplorer.png "Space Explorer Wireframe")
 

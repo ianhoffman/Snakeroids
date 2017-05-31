@@ -104,3 +104,15 @@ img {
 .start-modal-container p {
     margin-bottom: 10px;
 }
+
+.links {
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
+    margin: 0 auto;
+}
+
+.links a img {
+    width: 40px;
+    height: 40px;
+}

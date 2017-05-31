@@ -49,3 +49,24 @@ img {
 .game-over-modal p {
     
 }
+
+.score-bar {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    margin-top: 20px;
+    width: 100px;
+    height: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.score-bar img {
+    height: 42px;
+    width: 46px;
+}
+
+.score-bar span {
+    color: white;
+
+}

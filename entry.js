@@ -55,5 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.mozImageSmoothingEnabled = false;
     canvas.imageSmoothingEnabled = false;
 
-    startMessage(ctx);
+    const game = new GameView(ctx);
+    game.start();
+
+    // startMessage(ctx);
 });

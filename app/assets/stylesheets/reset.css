@@ -1,5 +1,6 @@
 body {
     margin: 0px;
+    position: relative;
 }
 
 canvas {
@@ -17,4 +18,34 @@ img {
     image-rendering: -webkit-crisp-edges;      /* Webkit */
     -ms-interpolation-mode: nearest-neighbor;  /* IE (non-standard property) */
     image-rendering: pixelated;                /* Chrome */
+}
+
+.game-over-modal {
+    background-color: whitesmoke;
+    opacity: 90%;
+    height: 100px;
+    width: 300px;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-over-modal-container { 
+    background: transparent;
+    height: auto;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-over-modal p {
+    
 }

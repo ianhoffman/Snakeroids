@@ -119,10 +119,10 @@ class Sprite {
 
         //don't allow ship to move offscreen
         if(this.type === 'spaceship') {
-            if(this.center.x - this.radius < 0 || this.center.x + this.radius > 600) {
+            if(this.center.x - this.radius < 0 || this.center.x + this.radius > this.game.DIM_X) {
                 this.center.x -= this.speed * Math.sin(this.angle);
             }
-            if(this.center.y - this.radius < 0 || this.center.y + this.radius > 600) {
+            if(this.center.y - this.radius < 0 || this.center.y + this.radius > this.game.DIM_Y) {
                 this.center.y += this.speed * Math.cos(this.angle);
             }
         }
@@ -286,44 +286,70 @@ class GameView {
         canvas.mozImageSmoothingEnabled = false;
         canvas.imageSmoothingEnabled = false;
 
+        this.animate = this.animate.bind(this);
+
         this.gameOverMessage = this.gameOverMessage.bind(this);
         this.renderScore = this.renderScore.bind(this);
         this.start = this.start.bind(this);
 
+        this.handleStart = this.handleStart.bind(this);
+
+        this.now = null;
+        this.then = null;
+        this.myReq = null;
+
+        document.getElementById('play-again').addEventListener('click', e => {
+            e.preventDefault();
+            e.target.parentElement.style.display = 'none';
+            document.getElementById('score').innerHTML = '0';
+            this.game = new __WEBPACK_IMPORTED_MODULE_0__game_js__["a" /* default */](this.canvas, this.audioBuilder);
+            this.start();
+        });
+
         this.gameInterval = null;
         this.makeAsteroids = null;
+        this.renderScore();
     }
 
-    start() {
-        this.renderScore();
-
-        clearInterval(this.gameInterval);
-        clearInterval(this.makeAsteroids);
-
-        this.gameInterval = setInterval( () => {
-            this.ctx.clearRect(0, 0, 800, 800);
-            this.game.moveObjects();
-            this.game.draw(this.ctx);
-            if(!this.game.spaceShip && this.game.explosions.length === 0) {
-                this.gameOverMessage(false);
-                clearInterval(this.gameInterval);
-                clearInterval(this.makeAsteroids);
-            } 
-            if(this.game.spaceShip && this.game.spaceShip.sourceCount === 10) {
-                this.gameOverMessage(true);
-                clearInterval(this.gameInterval);
-                clearInterval(this.makeAsteroids);
-            }
-        }, 40);
-
-        this.makeAsteroids = setInterval( () => {
-            const pos = __WEBPACK_IMPORTED_MODULE_1__utils__["a" /* randEdge */]();
+    animate(timestamp) {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.game.moveObjects();
+        this.game.draw(this.ctx);
+        this.now = timestamp;
+        if(!this.then) this.then = timestamp;
+        
+        if(this.game.spaceShip && 
+            this.now - this.then > 500 - (this.game.spaceShip.sourceCount * 50)) {
+            let pos = __WEBPACK_IMPORTED_MODULE_1__utils__["a" /* randEdge */]();
             this.game.generateOffscreenElement({
                 x: pos.x * this.game.DIM_X,
                 y: pos.y * this.game.DIM_Y
             }, 'asteroid');
-        }, 1000 - (this.game.spaceShip.sourceCount * 75));
+            this.then = timestamp;
+        }
+        
+        if(!this.game.spaceShip && this.game.explosions.length === 0) {
+            this.gameOverMessage(false);
+            cancelAnimationFrame(this.myReq);
+            this.then = null;
+            this.now = null;
+        } 
+        else if(this.game.spaceShip && this.game.spaceShip.sourceCount === 20) {
+            this.gameOverMessage(true);
+            cancelAnimationFrame(this.myReq);
+            this.then = null;
+            this.now = null;
+        } 
+        else {
+            this.myReq = requestAnimationFrame(this.animate);
+        }
     }
+
+
+    start() {
+        this.myReq = requestAnimationFrame(this.animate);
+    }
+
 
     renderScore() { 
         const scoreBar = document.createElement('div');
@@ -340,18 +366,24 @@ class GameView {
         powerSourceIcon.src = 'sprites/power_source_icon.png';
     }
 
+    handleStart(text) {
+        this.startCallback = (e) => {
+            e.preventDefault();
+            document.removeEventListener('click', this.startCallback);
+            e.target.parentElement.style.display = 'none';
+            document.getElementById('score').innerHTML = '0';
+            this.game = new __WEBPACK_IMPORTED_MODULE_0__game_js__["a" /* default */](this.canvas, this.audioBuilder);
+            this.start();
+        };
+        return this.startCallback;
+    }
+
     gameOverMessage(won) {
         const text = won ? 'You win!' : 'Game over...';
 
         const gameOverModal = document.getElementById('game-over');
         document.querySelectorAll('#game-over h3')[0].innerHTML = text;
         gameOverModal.style.display = 'flex';
-        document.getElementById('start-button').addEventListener('click', e => {
-            e.preventDefault();
-            e.target.parentElement.style.display = 'none';
-            this.game = new __WEBPACK_IMPORTED_MODULE_0__game_js__["a" /* default */](this.canvas, this.audioBuilder);
-            this.start();
-        });
     }
 }
 
@@ -368,29 +400,71 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+let firstEnter = true;
+
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
 
     const audioBuilder = new __WEBPACK_IMPORTED_MODULE_1__lib_audio_builder_js__["a" /* default */]();
 
+    const githubLinks = document.querySelectorAll('.fa-github');
+    for(let i = 0; i < githubLinks.length; i++) {
+        githubLinks[i].addEventListener('click', e => {
+            window.location = 'https://github.com/ianhoffman/SpaceExplorer';
+        });
+    }
+    
+    const linkedinLinks = document.querySelectorAll('.fa-linkedin');
+    for(let j = 0; j < linkedinLinks.length; j++) {
+        linkedinLinks[j].addEventListener('click', e => {
+            window.location = 'https://www.linkedin.com/in/hoffmanian/';
+        });
+    }
+    
+    const displayWidth  = canvas.clientWidth;
+    const displayHeight = canvas.clientHeight;
+    if (canvas.width  !== displayWidth ||
+        canvas.height !== displayHeight) {
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+    }
+
+
+    window.addEventListener('keypress', e => {
+        if(e.keyCode === 13 && firstEnter) {
+            showInstructions(document.getElementById('start-button'), canvas, audioBuilder);
+        } else if(e.keyCode) {
+            showGame(document.getElementById('start-button'), canvas, audioBuilder);
+        }
+    });
+
     document.getElementsByClassName('title-container')[0].addEventListener('click', e => {
             e.preventDefault();
             if(e.target.id==='start-button') {
-                e.target.id = '';
-                const titleContainer = e.target.parentElement;
-                titleContainer.style.display = 'none';
-                document.getElementsByClassName('top-links')[0].style.display = 'flex';
-                document.getElementById('instructions-container').style.display = 'flex';
-                document.getElementById('start-button').addEventListener('click', e2 => {
-                    e2.preventDefault();
-                    const game = new __WEBPACK_IMPORTED_MODULE_0__lib_game_view_js__["a" /* default */](canvas, audioBuilder);
-                    document.getElementById('instructions-container').style.display = 'none';
-                    e2.target.id = '';
-                    game.start();
-                });
+                showInstructions(e.target, canvas, audioBuilder);
             }
     });
 });
+
+const showInstructions = (startButton, canvas, audioBuilder) => {
+    startButton.id = '';
+    firstEnter = false;
+    const titleContainer = startButton.parentElement;
+    titleContainer.style.display = 'none';
+    document.getElementsByClassName('top-links')[0].style.display = 'flex';
+    document.getElementById('instructions-container').style.display = 'flex';
+    document.getElementById('start-button').addEventListener('click', e2 => {
+        e2.preventDefault();
+        showGame(e2.target, canvas, audioBuilder);
+    });
+};
+
+const showGame = (startButton, canvas, audioBuilder) => {
+    const game = new __WEBPACK_IMPORTED_MODULE_0__lib_game_view_js__["a" /* default */](canvas, audioBuilder);
+    document.getElementById('instructions-container').style.display = 'none';
+    startButton.id = '';
+    game.start();
+};
 
 
 /***/ }),
@@ -417,7 +491,7 @@ class Asteroid extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */] 
                 y: 0,
                 height: 35
             },
-            frameRate: 1,
+            frameRate: 8,
             
             speed: Math.random() + 1,
             angle: __WEBPACK_IMPORTED_MODULE_1__utils__["b" /* randAngle */]()
@@ -452,7 +526,7 @@ class Bullet {
     this.width = 17;
     this.height = 20; 
 
-    this.speed = 5;
+    this.speed = 4;
     this.angle = props.angle;
     this.type = 'bullet';
 
@@ -565,8 +639,8 @@ class Explosion extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
 
 class Game {
     constructor(canvas, audioBuilder) {
-        this.DIM_X = 600;
-        this.DIM_Y = 600;
+        this.DIM_X = canvas.width;
+        this.DIM_Y = canvas.height;
         this.NUM_ASTEROIDS = 0;
         this.NUM_PLANETS = 0;
         this.NUM_POWER_SOURCES = 0;
@@ -770,6 +844,7 @@ class Game {
                         x: obj2.center.x - 45,
                         y: obj2.center.y - 45
                     }));
+                    this.spaceShip.statusBar.style.display = 'none';
                     this.asteroids.splice(idx, 1);
                 } else {
                     this.explosions.push(new __WEBPACK_IMPORTED_MODULE_2__explosion__["a" /* default */]({
@@ -800,15 +875,10 @@ class Game {
             this.asteroids.splice(idx, 1);
             this.bullets.splice(jdx, 1);
         }
-
-        if(obj1.type === 'asteroid' && obj2.type === 'asteroid') {
-            
-        }
-
     }
 
     atEdge(sprite) {
-        if((sprite.center.x < 40 || sprite.center.x > this.DIM_X - 40) &&
+        if((sprite.center.x < 40 || sprite.center.x > this.DIM_X - 40) ||
         (sprite.center.y < 40 || sprite.center.y > this.DIM_Y - 40)) {
             return true;
         }
@@ -819,8 +889,6 @@ class Game {
         this.bullets.push(bullet);
         this.audioBuilder.createAudio('sounds/bullet-fired.mp3', 2).play();
     }
-
-
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Game);
@@ -847,7 +915,7 @@ class PowerSource extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default *
           y: 0,
           height: 42
       },
-      frameRate: 0,
+      frameRate: 2,
       speed: 0,
       angle: 0
     });
@@ -894,13 +962,12 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
             speed: 0,
             angle: 0
         });
-
         this.moveAngle = 0;
-        this.fwdSpeed = 2;
-        this.turnSpeed = 2;
-        this.bckSpeed = -1;
+        this.fwdSpeed = 3;
+        this.turnSpeed = 3;
+        this.bckSpeed = -2;
 
-        this.firePause = 8;
+        this.firePause = 35;
         this.bulletQueued = false;
         this.fireCountdown = 0;
 
@@ -979,10 +1046,10 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
 
         if(this.statusInterval === 0) {
             this.shieldsUp = false;
-            this.turnSpeed = 2;
-            this.fwdSpeed = 1;
-            this.bckSpeed = -1;
-            this.firePause = 8;
+            this.turnSpeed = 3;
+            this.fwdSpeed = 3;
+            this.bckSpeed = -2;
+            this.firePause = 35;
             if(this.statusBar.style.display === 'block') {
                 this.statusBar.style.display = 'none';
             }
@@ -999,16 +1066,15 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
                     2 * Math.PI
                 );
                 ctx.strokeStyle = 'teal';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 3;
                 ctx.setLineDash([1, 2]);
                 ctx.stroke();
             } 
-
             this.shieldIteration += 1;
         }
 
         super.render(ctx);
-
+        
         if(this.sourceCount >= 4) {
 
         }
@@ -1030,26 +1096,33 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
 
         const rand = Math.random();
 
-        if(this.rand < .25) {
-            this.turnSpeed += 2;
-            this.status.innerHTML = 'Warpseed!';
-            this.statusInterval = 40;
+        this.shieldsUp = false;
+        this.moveAngle = 0;
+        this.fwdSpeed = 3;
+        this.turnSpeed = 3;
+        this.bckSpeed = -2;
+        this.firePause = 35;
+
+        if(rand < .25) {
+            this.turnSpeed *= 2;
+            this.status.innerHTML = 'Extra Torque';
+            this.statusInterval = 250;
         }
-        if(this.rand >= .25 && this.rand < .5) {
-            this.fwdSpeed += 2;
-            this.bckSpeed -= 1;
-            this.status.innerHTML = 'Extra Torque!!';
-            this.statusInterval = 40;
+        if(rand >= .25 && rand < .5) {
+            this.fwdSpeed *= 2;
+            this.bckSpeed *= 2;
+            this.status.innerHTML = 'Warspeed';
+            this.statusInterval = 250;
         }
-        if(this.rand >= .5 && this.rand < .75) {
+        if(rand >= .5 && rand < .75) {
             this.shieldsUp = true;
-            this.status.innerHTML = 'Shields Up!';
-            this.statusInterval = 40;
+            this.status.innerHTML = 'Shields Up';
+            this.statusInterval = 250;
         }
-        if(this.rand >= .75 && this.rand < 1) {
+        if(rand >= .75 && rand < 1) {
             this.firePause = 1;
-            this.status.innerHTML = 'Quick Fire!';
-            this.statusInterval = 40;
+            this.status.innerHTML = 'Rapid Fire';
+            this.statusInterval = 250;
         }
     }
 

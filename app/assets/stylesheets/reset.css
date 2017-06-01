@@ -1,3 +1,7 @@
+html {
+    background-color: black;
+}
+
 @font-face {
     font-family: hyperspace;
     src: url('../fonts/hyperspace/hyperspace.otf');
@@ -20,6 +24,12 @@
 
 body {
     margin: 0px;
+    background-image: url('../../../misc_images/background.jpeg');
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-position: 0px;
 }
 
 .title-container {
@@ -112,8 +122,8 @@ canvas {
     image-rendering: crisp-edges;               
     -ms-interpolation-mode: nearest-neighbor;   
     background-color: black;
-    width: 600px;
-    height: 600px;
+    width: auto;
+    height: 100%;
 }
 
 img {

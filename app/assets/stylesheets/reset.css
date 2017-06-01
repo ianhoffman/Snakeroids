@@ -29,8 +29,6 @@ html {
 
 body {
     margin: 0px;
-    background-image: url('../../../misc_images/background.jpeg');
-    background-size: cover;
     border: 0px;
     display: flex;
     align-items: center;

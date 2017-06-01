@@ -1,6 +1,8 @@
 import GameView from './lib/game_view.js';
 import AudioBuilder from './lib/audio_builder.js';
 
+let firstEnter = true;
+
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
 
@@ -28,10 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = displayHeight;
     }
 
-    let firstEnter = true;
+
     window.addEventListener('keypress', e => {
         if(e.keyCode === 13 && firstEnter) {
-            firstEnter = false;
             showInstructions(document.getElementById('start-button'), canvas, audioBuilder);
         } else if(e.keyCode) {
             showGame(document.getElementById('start-button'), canvas, audioBuilder);
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const showInstructions = (startButton, canvas, audioBuilder) => {
     startButton.id = '';
+    firstEnter = false;
     const titleContainer = startButton.parentElement;
     titleContainer.style.display = 'none';
     document.getElementsByClassName('top-links')[0].style.display = 'flex';

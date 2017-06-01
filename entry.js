@@ -6,6 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const audioBuilder = new AudioBuilder();
 
+    const githubLinks = document.querySelectorAll('.fa-github');
+    for(let i = 0; i < githubLinks.length; i++) {
+        githubLinks[i].addEventListener('click', e => {
+            window.location = 'https://github.com/ianhoffman/SpaceExplorer';
+        });
+    }
+    
+    const linkedinLinks = document.querySelectorAll('.fa-linkedin');
+    for(let j = 0; j < linkedinLinks.length; j++) {
+        linkedinLinks[j].addEventListener('click', e => {
+            window.location = 'https://www.linkedin.com/in/hoffmanian/';
+        });
+    }
+
     document.getElementsByClassName('title-container')[0].addEventListener('click', e => {
             e.preventDefault();
             if(e.target.id==='start-button') {

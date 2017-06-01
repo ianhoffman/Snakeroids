@@ -54,6 +54,7 @@ h2 {
 h3 {
     font-family: hyperspace;
     font-size: 30px;
+    color: white;
 }
 
 .author-info h3 {
@@ -283,4 +284,17 @@ ul li {
 
 .top-links {
     display: none;
+}
+
+#game-over {
+    display: none;
+    position: absolute;
+    top: calc(50% - 131px);
+    flex-direction: column;
+    background-color: black;
+    justify-content: center;
+}
+
+#game-over h3 {
+    background-color: black;
 }

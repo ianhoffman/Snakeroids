@@ -296,7 +296,7 @@ ul li {
     display: none;
     position: absolute;
     bottom: 0px;
-    right: 0px;
+    right: 7px;
 }
 
 .top-links .fa-github {
@@ -335,6 +335,23 @@ ul li {
    }
  }
 
+#play-again {
+   animation-duration: 200ms;
+   animation-name: flash;
+   animation-iteration-count: infinite;
+   /*animation-timing-function: linear;*/
+   /*animation-play-state: running;*/
+   animation-direction: alternate;
+}
+@keyframes flash {
+   from {
+      color: white;
+   }
+   to {
+      color: red;
+   }
+ }
+
  #score {
     font-family: hyperspace;
     font-size: 35px;
@@ -345,11 +362,10 @@ ul li {
  #status-bar {
      display: none;
      position: absolute;
-     left: 4px;
+     left: 8px;
      bottom: 4px;
-     background: white;
  }
 
  #status {
-     color: black;
+     color: white;
  }

@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.target.id = '';
                 const titleContainer = e.target.parentElement;
                 titleContainer.style.display = 'none';
+                document.getElementsByClassName('top-links')[0].style.display = 'flex';
                 document.getElementById('instructions-container').style.display = 'flex';
                 document.getElementById('start-button').addEventListener('click', e2 => {
                     e2.preventDefault();

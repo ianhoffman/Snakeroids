@@ -331,3 +331,15 @@ ul li {
     position: relative;
     top: -4px;
  }
+
+ #status-bar {
+     display: none;
+     position: absolute;
+     left: 4px;
+     bottom: 4px;
+     background: white;
+ }
+
+ #status {
+     color: black;
+ }

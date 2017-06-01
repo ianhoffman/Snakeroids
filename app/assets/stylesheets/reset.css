@@ -1,17 +1,106 @@
+@font-face {
+    font-family: hyperspace;
+    src: url('../fonts/hyperspace/hyperspace.otf');
+}
+
+@font-face {
+    font-family: hyperspace-italic;
+    src: url('../fonts/hyperspace/hyperspace_italic.otf');
+}
+
+@font-face {
+    font-family: hyperspace-bold;
+    src: url('../fonts/hyperspace/hyperspace_bold.otf');
+}
+
+@font-face {
+    font-family: hyperspace-bold-italic;
+    src: url('../fonts/hyperspace/hyperspace_bold_italic.otf');
+}
+
 body {
     margin: 0px;
 }
 
-p, h1, h2 {
+.title-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 453px;
+    position: absolute;
+    top: calc(50% - 140px);
+    color: white;
+}
+
+.author-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.title-container h1 {
+    font-family: hyperspace-bold-italic;
+    text-align: end;
+    font-size: 73px;
+}
+
+h2 {
+    font-family: hyperspace;
+    margin-top: 29px;
+    margin-bottom: 9px;
+}
+
+h3 {
+    font-family: hyperspace;
+    font-size: 30px;
+}
+
+.author-info h3 {
+    font-size: 33px;
+}
+
+.fa-github {
+    color: white;
+    font-size: 38px;
+    margin-top: 3px;
+    margin-right: 8px;
+    position: relative;
+    top: 1px;
+}
+
+.links {
+    position: relative;
+}
+
+.fa-linkedin {
+    color: white;
+    background-color: #0177b5;
+    border-radius: 5px;
+    font-size: 30px;
+    margin-top: 6px;
+    padding: 2px 4px;
+    margin-bottom: 1px;
+    position: relative;
+    top: -2px;
+    margin-right: 3px;
+}
+
+p, h1, h2, h3 {
     margin: 0px;
+}
+
+p {
     text-align: center;
 }
 
 main {
-    width: 600px;
-    height: 600px;
+    width: 100%;
+    height: 100%;
     position: relative;
     margin: 0 auto;
+    display: flex;
+    justify-content: center;
 }
 
 canvas {
@@ -22,6 +111,8 @@ canvas {
     image-rendering: crisp-edges;               
     -ms-interpolation-mode: nearest-neighbor;   
     background-color: black;
+    width: 100%;
+    height: 100%;
 }
 
 img {
@@ -105,19 +196,13 @@ img {
     margin-bottom: 10px;
 }
 
-.links {
-    display: flex;
-    justify-content: space-between;
-    width: 60%;
-    margin: 0 auto;
+i:hover {
+    cursor: pointer;
 }
 
-.links a img {
-    width: 40px;
-    height: 40px;
-}
-
-i {
+.fa-volume-up, .fa-volume-off {
+    font-size: 42px;
+    opacity: .7;
     position: absolute;
     top: 6px;
     left: 10px;
@@ -126,7 +211,76 @@ i {
     z-index: 1001;
 }
 
-.fa {
-    font-size: 42px;
-    opacity: .7;
+#start-modal {
+    padding: 20px;
+    border-radius: 9px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#start-modal h1, #start-modal p, #start-modal h2 {
+    text-align: center;
+}
+
+button {
+    margin: 0 auto;
+    font-family: hyperspace-italic;
+    background-color: black;
+    color: white;
+    border: none;
+    font-size: 50px;
+    margin-top: 28px;
+    position: relative;
+    right: 5px;
+}
+
+button:focus {
+    outline: 0px;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+#instructions-container {
+    display: none;
+    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 453px;
+    position: absolute;
+    top: calc(50% - 140px);
+    color: white;
+    align-items: center;
+}
+
+#instructions-container > h3:first-of-type {
+    margin-bottom: 12px;
+}
+
+#instructions-container img {
+    width: 145px;
+}
+
+.instructions-info {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    margin-top: 30px;
+}
+
+#instructions-container button {
+    margin-top: 10px;
+}
+
+#instructions-container ul {
+    list-style: none;
+    padding: 0px;
+}
+
+ul li {
+    font-family: hyperspace;
+}
+
+.top-links {
+    display: none;
 }

@@ -20,34 +20,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-  // Lookup the size the browser is displaying the canvas.
-    var displayWidth  = canvas.clientWidth;
-    var displayHeight = canvas.clientHeight;
- 
-  // Check if the canvas is not the same size.
+    const displayWidth  = canvas.clientWidth;
+    const displayHeight = canvas.clientHeight;
     if (canvas.width  !== displayWidth ||
         canvas.height !== displayHeight) {
- 
-    // Make the canvas the same size
         canvas.width = displayWidth;
         canvas.height = displayHeight;
     }
 
+    let firstEnter = true;
+    window.addEventListener('keypress', e => {
+        if(e.keyCode === 13 && firstEnter) {
+            firstEnter = false;
+            showInstructions(document.getElementById('start-button'), canvas, audioBuilder);
+        } else if(e.keyCode) {
+            showGame(document.getElementById('start-button'), canvas, audioBuilder);
+        }
+    });
+
     document.getElementsByClassName('title-container')[0].addEventListener('click', e => {
             e.preventDefault();
             if(e.target.id==='start-button') {
-                e.target.id = '';
-                const titleContainer = e.target.parentElement;
-                titleContainer.style.display = 'none';
-                document.getElementsByClassName('top-links')[0].style.display = 'flex';
-                document.getElementById('instructions-container').style.display = 'flex';
-                document.getElementById('start-button').addEventListener('click', e2 => {
-                    e2.preventDefault();
-                    const game = new GameView(canvas, audioBuilder);
-                    document.getElementById('instructions-container').style.display = 'none';
-                    e2.target.id = '';
-                    game.start();
-                });
+                showInstructions(e.target, canvas, audioBuilder);
             }
     });
 });
+
+const showInstructions = (startButton, canvas, audioBuilder) => {
+    startButton.id = '';
+    const titleContainer = startButton.parentElement;
+    titleContainer.style.display = 'none';
+    document.getElementsByClassName('top-links')[0].style.display = 'flex';
+    document.getElementById('instructions-container').style.display = 'flex';
+    document.getElementById('start-button').addEventListener('click', e2 => {
+        e2.preventDefault();
+        showGame(e2.target, canvas, audioBuilder);
+    });
+};
+
+const showGame = (startButton, canvas, audioBuilder) => {
+    const game = new GameView(canvas, audioBuilder);
+    document.getElementById('instructions-container').style.display = 'none';
+    startButton.id = '';
+    game.start();
+};

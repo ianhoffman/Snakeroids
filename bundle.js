@@ -905,7 +905,7 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
         this.fireCountdown = 0;
 
         this.type = 'spaceship';
-        this.sourceCount = 8;
+        this.sourceCount = 0;
         this.game = props.game;
         this.shieldIteration = 0;
         this.shieldsUp = false;

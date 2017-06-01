@@ -19,6 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location = 'https://www.linkedin.com/in/hoffmanian/';
         });
     }
+    
+  // Lookup the size the browser is displaying the canvas.
+    var displayWidth  = canvas.clientWidth;
+    var displayHeight = canvas.clientHeight;
+ 
+  // Check if the canvas is not the same size.
+    if (canvas.width  !== displayWidth ||
+        canvas.height !== displayHeight) {
+ 
+    // Make the canvas the same size
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+    }
 
     document.getElementsByClassName('title-container')[0].addEventListener('click', e => {
             e.preventDefault();

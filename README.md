@@ -1,6 +1,6 @@
 # SNAKEROIDS
 
-[Live](https://spaceexplorerjs.herokuapp.com/#/)
+[Live](https://ianhoffman.github.io/SpaceExplorer/)
 
 Asteroids. Snake. Two classic games, now brought to you in one intriguing mash-up. **Snakeroids** (pronounced *Snake - er - roids* ) is a space shooter where the goal is to collect as many power sources as you can -- before the asteroids wipe you out.  
   

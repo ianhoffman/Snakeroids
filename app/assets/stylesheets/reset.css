@@ -164,7 +164,7 @@ img {
 
 .score-bar {
     position: absolute;
-    top: 0px;
+    top: -9px;
     right: 15px;
     margin-top: 20px;
     width: 100px;
@@ -366,10 +366,35 @@ ul li {
  #status-bar {
      display: none;
      position: absolute;
-     left: 8px;
-     bottom: 4px;
+     width: 100%;
+     top: 4px;
  }
 
  #status {
      color: white;
+     text-align: center;
  }
+
+ .fa-info-circle {
+    color: white;
+    position: relative;
+    font-size: 36px;
+    top: 5px;
+    margin-right: 9px;
+ }
+
+ .fa-pause {
+    color: white;
+    font-size: 33px;
+    opacity: .7;
+    position: relative;
+    top: 7px;
+    margin-left: 2px;
+ }
+
+ .left-links {
+    display: none;
+    position: absolute;
+    bottom: 5px;
+    left: 8px;
+}

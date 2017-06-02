@@ -1,8 +1,10 @@
 import GameView from './lib/game_view.js';
 import AudioBuilder from './lib/audio_builder.js';
 
-let firstEnter = true;
+var firstEnter = true;
+var secondEnter = false;
 var game;
+var gameStarted = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let displayWidth  = canvas.clientWidth;
     let displayHeight = canvas.clientHeight;
+    var oldWidth, delta; 
     if (canvas.width  !== displayWidth ||
         canvas.height !== displayHeight) {
         canvas.width = displayWidth;
@@ -37,26 +40,28 @@ document.addEventListener('DOMContentLoaded', () => {
         displayHeight = canvas.clientHeight;
         if (canvas.width  !== displayWidth ||
         canvas.height !== displayHeight) {
-            canvas.width = displayWidth;
-            canvas.height = displayHeight;
-            if(game) {
-                game.game.DIM_X = canvas.width;
-                game.game.DIM_Y = canvas.height;
-            }
+            setTimeout(() => {
+                canvas.width = displayWidth;
+                canvas.height = displayHeight;
+                if(game) {
+                    game.game.DIM_X = canvas.width;
+                    game.game.DIM_Y = canvas.height;
+                }
+            }, 10);
         }
     });
 
     window.addEventListener('keypress', e => {
         if(e.keyCode === 13 && firstEnter) {
             showInstructions(document.getElementById('start-button'), canvas, audioBuilder);
-        } else if(e.keyCode) {
+        } else if(e.keyCode === 13 && secondEnter) {
             showGame(document.getElementById('start-button'), canvas, audioBuilder);
         }
     });
 
     document.getElementsByClassName('title-container')[0].addEventListener('click', e => {
         e.preventDefault();
-        if(e.target.id==='start-button') {
+        if(e.target.id==='start-button' && gameStarted === false) {
             showInstructions(e.target, canvas, audioBuilder);
         }
      });
@@ -65,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const showInstructions = (startButton, canvas, audioBuilder) => {
     startButton.id = '';
     firstEnter = false;
+    secondEnter = true;
     const titleContainer = startButton.parentElement;
     titleContainer.style.display = 'none';
     document.getElementsByClassName('top-links')[0].style.display = 'flex';
@@ -76,8 +82,12 @@ const showInstructions = (startButton, canvas, audioBuilder) => {
 };
 
 const showGame = (startButton, canvas, audioBuilder) => {
-    game = new GameView(canvas, audioBuilder);
-    document.getElementById('instructions-container').style.display = 'none';
-    startButton.id = '';
-    game.start();
+    if(!gameStarted) {
+        game = new GameView(canvas, audioBuilder);
+        secondEnter = false;
+        gameStarted = true;
+        document.getElementsByClassName('left-links')[0].style.display = 'flex';
+        document.getElementById('instructions-container').style.display = 'none';
+        game.start();
+    }
 };

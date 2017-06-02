@@ -338,7 +338,7 @@ class GameView {
         }
         
         if(this.game.spaceShip && 
-            this.now - this.lastAsteroid > 900 - (this.game.spaceShip.sourceCount * 25)) {
+            this.now - this.lastAsteroid > 825 - (this.game.spaceShip.sourceCount * 27)) {
             console.log('new asteroid incoming!');
             let pos = __WEBPACK_IMPORTED_MODULE_1__utils__["a" /* randEdge */]();
             this.game.generateOffscreenElement({
@@ -967,8 +967,8 @@ class Game {
     }
 
     atEdge(sprite) {
-        if((sprite.center.x < 40 || sprite.center.x > this.DIM_X - 40) ||
-        (sprite.center.y < 40 || sprite.center.y > this.DIM_Y - 40)) {
+        if((sprite.center.x < 80 || sprite.center.x > this.DIM_X - 80) ||
+        (sprite.center.y < 80 || sprite.center.y > this.DIM_Y - 80)) {
             return true;
         }
         return false;
@@ -1133,7 +1133,7 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
         this.turnSpeed = 12;
         this.bckSpeed = -8;
 
-        this.firePause = 9;
+        this.firePause = 12;
         this.bulletQueued = false;
         this.fireCountdown = 0;
 
@@ -1157,16 +1157,16 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
     registerKeyHandlers() {
         this.keydownListener = window.addEventListener('keydown', e => {
             e.preventDefault();
-            if(e.keyCode === 87) {
+            if(e.keyCode === 87 || e.keyCode === 38) {
                 this.speed = this.fwdSpeed;
             } 
-            if(e.keyCode === 83) {
+            if(e.keyCode === 83 || e.keyCode === 40) {
                 this.speed = this.bckSpeed;
             }
-            if(e.keyCode === 65) {
+            if(e.keyCode === 65 || e.keyCode === 37) {
                 this.moveAngle = (this.turnSpeed * -1);
             }
-            if(e.keyCode === 68) {
+            if(e.keyCode === 68 || e.keyCode === 39) {
                 this.moveAngle = this.turnSpeed;
             }
             if(e.keyCode === 32 && this.fireCountdown === 0) {
@@ -1179,16 +1179,16 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
 
         this.keyupListener = window.addEventListener('keyup', (e) => {
             e.preventDefault();
-            if(e.keyCode === 87) {
+            if(e.keyCode === 87 || e.keyCode === 38) {
                 this.speed = 0;
             } 
-            if(e.keyCode === 83) {
+            if(e.keyCode === 83 || e.keyCode === 40) {
                 this.speed = 0;
             }
-            if(e.keyCode === 65) {
+            if(e.keyCode === 65 || e.keyCode === 37) {
                 this.moveAngle = 0;
             }
-            if(e.keyCode === 68) {
+            if(e.keyCode === 68 || e.keyCode === 39) {
                 this.moveAngle = 0;
             }
         });
@@ -1215,7 +1215,7 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
             this.turnSpeed = 12;
             this.fwdSpeed = 12;
             this.bckSpeed = -8;
-            this.firePause = 35;
+            this.firePause = 12;
             if(this.statusBar.style.display === 'block') {
                 this.statusBar.style.display = 'none';
             }
@@ -1272,7 +1272,7 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
         this.fwdSpeed = 12;
         this.turnSpeed = 12;
         this.bckSpeed = -8;
-        this.firePause = 9;
+        this.firePause = 12;
 
         if(rand < .25) {
             this.turnSpeed *= 2;

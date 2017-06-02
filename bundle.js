@@ -275,6 +275,16 @@ class AudioBuilder {
 
 
 
+// make sure we use the 
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
 class GameView {
     constructor(canvas, audioBuilder) {
         this.game = new __WEBPACK_IMPORTED_MODULE_0__game_js__["a" /* default */](canvas, audioBuilder);
@@ -287,16 +297,20 @@ class GameView {
         canvas.imageSmoothingEnabled = false;
 
         this.animate = this.animate.bind(this);
+        this.fps = 15;
+        this.now = null;
+        this.then = null;
+        this.delta = null;
+        this.myReq = null;
+        this.interval = 1000 / this.fps;
+        this.asteroidInterval = 1000;
+        this.lastAsteroid = null;
 
         this.gameOverMessage = this.gameOverMessage.bind(this);
         this.renderScore = this.renderScore.bind(this);
         this.start = this.start.bind(this);
-
         this.handleStart = this.handleStart.bind(this);
 
-        this.now = null;
-        this.then = null;
-        this.myReq = null;
 
         document.getElementById('play-again').addEventListener('click', e => {
             e.preventDefault();
@@ -312,21 +326,26 @@ class GameView {
     }
 
     animate(timestamp) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.game.moveObjects();
-        this.game.draw(this.ctx);
-        this.now = timestamp;
-        if(!this.then) this.then = timestamp;
+
+        this.now = Date.now();
+        this.delta = this.now - this.then;
+
+        if(this.delta > this.interval) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.game.moveObjects();
+            this.game.draw(this.ctx);
+            this.then = this.now - (this.delta % this.interval);
+        }
         
         if(this.game.spaceShip && 
-            this.now - this.then > 500 - (this.game.spaceShip.sourceCount * 10)) {
+            this.now - this.lastAsteroid > 900 - (this.game.spaceShip.sourceCount * 25)) {
             console.log('new asteroid incoming!');
             let pos = __WEBPACK_IMPORTED_MODULE_1__utils__["a" /* randEdge */]();
             this.game.generateOffscreenElement({
                 x: pos.x * this.game.DIM_X,
                 y: pos.y * this.game.DIM_Y
             }, 'asteroid');
-            this.then = timestamp;
+            this.lastAsteroid = this.now;
         }
         
         if(!this.game.spaceShip && this.game.explosions.length === 0) {
@@ -335,20 +354,14 @@ class GameView {
             this.then = null;
             this.now = null;
         } 
-        // else if(this.game.spaceShip && this.game.spaceShip.sourceCount === 20) {
-        //     this.gameOverMessage(true);
-        //     cancelAnimationFrame(this.myReq);
-        //     this.then = null;
-        //     this.now = null;
-        // } 
         else {
-            this.myReq = requestAnimationFrame(this.animate);
+            this.myReq = window.requestAnimFrame(this.animate);
         }
     }
 
 
     start() {
-        this.myReq = requestAnimationFrame(this.animate);
+        this.myReq = window.requestAnimFrame(this.animate);
     }
 
 
@@ -491,9 +504,9 @@ class Asteroid extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */] 
                 y: 0,
                 height: 35
             },
-            frameRate: 8,
+            frameRate: 0,
             
-            speed: Math.random() + 1,
+            speed: (Math.random()) + 4,
             angle: __WEBPACK_IMPORTED_MODULE_1__utils__["b" /* randAngle */]()
         });
         this.type = 'asteroid';
@@ -526,7 +539,7 @@ class Bullet {
     this.width = 17;
     this.height = 20; 
 
-    this.speed = 4;
+    this.speed = 16;
     this.angle = props.angle;
     this.type = 'bullet';
 
@@ -605,7 +618,7 @@ class FastBullet {
     this.width = 16;
     this.height = 20; 
 
-    this.speed = 4;
+    this.speed = 16;
     this.angle = props.angle;
     this.type = 'bullet';
 
@@ -991,7 +1004,7 @@ class PowerSource extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default *
           y: 0,
           height: 42
       },
-      frameRate: 2,
+      frameRate: 0,
       speed: 0,
       angle: 0
     });
@@ -1032,7 +1045,7 @@ class RocketExhaust {
     this.width = 19;
     this.height = 39; 
 
-    this.speed = 4;
+    this.speed = 0;
     this.angle = 0;
     this.type = 'rocketExhaust';
 
@@ -1116,11 +1129,11 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
             angle: 0
         });
         this.moveAngle = 0;
-        this.fwdSpeed = 3;
-        this.turnSpeed = 3;
-        this.bckSpeed = -2;
+        this.fwdSpeed = 12;
+        this.turnSpeed = 12;
+        this.bckSpeed = -8;
 
-        this.firePause = 35;
+        this.firePause = 9;
         this.bulletQueued = false;
         this.fireCountdown = 0;
 
@@ -1199,9 +1212,9 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
 
         if(this.statusInterval === 0) {
             this.shieldsUp = false;
-            this.turnSpeed = 3;
-            this.fwdSpeed = 3;
-            this.bckSpeed = -2;
+            this.turnSpeed = 12;
+            this.fwdSpeed = 12;
+            this.bckSpeed = -8;
             this.firePause = 35;
             if(this.statusBar.style.display === 'block') {
                 this.statusBar.style.display = 'none';
@@ -1228,7 +1241,7 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
 
         super.render(ctx);
         
-        if(this.fwdSpeed === 6) {
+        if(this.fwdSpeed === 24) {
             let rocketExhaust = new __WEBPACK_IMPORTED_MODULE_3__rocket_exhaust__["a" /* default */]({
                 x: this.center.x - (Math.sin(this.angle) * this.radius),
                 y: this.center.y + (Math.cos(this.angle) * this.radius)
@@ -1256,31 +1269,31 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
 
         this.shieldsUp = false;
         this.moveAngle = 0;
-        this.fwdSpeed = 3;
-        this.turnSpeed = 3;
-        this.bckSpeed = -2;
-        this.firePause = 35;
+        this.fwdSpeed = 12;
+        this.turnSpeed = 12;
+        this.bckSpeed = -8;
+        this.firePause = 9;
 
         if(rand < .25) {
             this.turnSpeed *= 2;
             this.status.innerHTML = 'Extra Torque';
-            this.statusInterval = 400;
+            this.statusInterval = 100;
         }
         if(rand >= .25 && rand < .5) {
-            this.fwdSpeed = 6;
-            this.bckSpeed = -4;
-            this.status.innerHTML = 'Warspeed';
-            this.statusInterval = 400;
+            this.fwdSpeed = 24;
+            this.bckSpeed = -12;
+            this.status.innerHTML = 'Warpspeed';
+            this.statusInterval = 100;
         }
         if(rand >= .5 && rand < .75) {
             this.shieldsUp = true;
             this.status.innerHTML = 'Shields Up';
-            this.statusInterval = 400;
+            this.statusInterval = 100;
         }
         if(rand >= .75 && rand < 1) {
             this.firePause = 1;
             this.status.innerHTML = 'Rapid Fire';
-            this.statusInterval = 400;
+            this.statusInterval = 100;
         }
     }
 

@@ -279,7 +279,7 @@ class AudioBuilder {
 
 
 
-// make sure we use the 
+// make sure we use the browser-specific version
 window.requestAnimFrame = (function(){
   return  window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||
@@ -300,6 +300,7 @@ class GameView {
         canvas.mozImageSmoothingEnabled = false;
         canvas.imageSmoothingEnabled = false;
 
+        //handle animation
         this.animate = this.animate.bind(this);
         this.fps = 15;
         this.now = null;
@@ -314,7 +315,6 @@ class GameView {
         this.renderScore = this.renderScore.bind(this);
         this.start = this.start.bind(this);
         this.handleStart = this.handleStart.bind(this);
-
 
         document.getElementById('play-again').addEventListener('click', e => {
             e.preventDefault();
@@ -347,7 +347,6 @@ class GameView {
             
             if(this.game.spaceShip && 
                 this.now - this.lastAsteroid > 825 - (this.game.spaceShip.sourceCount * 27)) {
-                console.log('new asteroid incoming!');
                 let pos = __WEBPACK_IMPORTED_MODULE_1__utils__["a" /* randEdge */]();
                 this.game.generateOffscreenElement({
                     x: pos.x * this.game.DIM_X,
@@ -420,7 +419,7 @@ class GameView {
             this.instructionsClicked = true;
             startButton.addEventListener('click', e2 => {
                 this.paused = false;
-                const newStart = document.cloneNode(startButton);
+                const newStart = startButton.cloneNode();
                 startButton.parentElement.replaceChild(newStart, startButton);
                 this.instructionsClicked = false;
                 titleContainer.style.display = 'none';
@@ -440,7 +439,7 @@ class GameView {
         document.getElementsByClassName('fa-pause')[0].addEventListener('click', e => {
             if(!this.paused) {
                 this.paused = true;
-            } else {
+            } else if(this.paused && !this.instructionsClicked) {
                 this.paused = false;
                 window.requestAnimFrame(this.animate);
             }

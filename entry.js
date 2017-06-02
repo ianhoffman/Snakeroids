@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const githubLinks = document.querySelectorAll('.fa-github');
     for(let i = 0; i < githubLinks.length; i++) {
         githubLinks[i].addEventListener('click', e => {
-            window.location = 'https://github.com/ianhoffman/SpaceExplorer';
+            window.location = 'https://github.com/ianhoffman/Snakeroids';
         });
     }
     

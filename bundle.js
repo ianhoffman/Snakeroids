@@ -311,6 +311,7 @@ class GameView {
         this.asteroidInterval = 1000;
         this.lastAsteroid = null;
 
+        this.countToGameOver = null;
         this.gameOverMessage = this.gameOverMessage.bind(this);
         this.renderScore = this.renderScore.bind(this);
         this.start = this.start.bind(this);
@@ -355,12 +356,22 @@ class GameView {
                 this.lastAsteroid = this.now;
             }
             
-            if(!this.game.spaceShip && this.game.explosions.length === 0) {
-                this.gameOverMessage(false);
-                cancelAnimationFrame(this.myReq);
-                this.then = null;
-                this.now = null;
+            if(!this.game.spaceShip && !this.countToGameOver) {
+                this.countToGameOver = 60;
+                this.myReq = window.requestAnimFrame(this.animate);
             } 
+            else if(!this.game.spaceShip) {
+                this.countToGameOver -= 1;
+                if(this.countToGameOver === 0) {
+                    this.gameOverMessage(false);
+                    cancelAnimationFrame(this.myReq);
+                    this.then = null;
+                    this.now = null;
+                    this.countToGameOver = null;
+                } else {
+                    this.myReq = window.requestAnimFrame(this.animate);
+                }
+            }
             else {
                 this.myReq = window.requestAnimFrame(this.animate);
             }
@@ -1274,7 +1285,6 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
     }
 
     move() {
-        console.log(this.moveAngle);
         if(this.goingFwd && this.speed < this.maxFwdSpeed) {
             this.speed += this.fwdAccel;
         } else if(this.goingBck && this.speed > this.maxBckSpeed) {

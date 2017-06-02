@@ -2,6 +2,7 @@ import GameView from './lib/game_view.js';
 import AudioBuilder from './lib/audio_builder.js';
 
 let firstEnter = true;
+var game;
 
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
@@ -22,14 +23,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    const displayWidth  = canvas.clientWidth;
-    const displayHeight = canvas.clientHeight;
+    let displayWidth  = canvas.clientWidth;
+    let displayHeight = canvas.clientHeight;
     if (canvas.width  !== displayWidth ||
         canvas.height !== displayHeight) {
         canvas.width = displayWidth;
         canvas.height = displayHeight;
     }
 
+    window.addEventListener('resize', e => {
+        e.preventDefault();
+        displayWidth  = canvas.clientWidth;
+        displayHeight = canvas.clientHeight;
+        if (canvas.width  !== displayWidth ||
+        canvas.height !== displayHeight) {
+            canvas.width = displayWidth;
+            canvas.height = displayHeight;
+            if(game) {
+                game.game.DIM_X = canvas.width;
+                game.game.DIM_Y = canvas.height;
+            }
+        }
+    });
 
     window.addEventListener('keypress', e => {
         if(e.keyCode === 13 && firstEnter) {
@@ -40,11 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementsByClassName('title-container')[0].addEventListener('click', e => {
-            e.preventDefault();
-            if(e.target.id==='start-button') {
-                showInstructions(e.target, canvas, audioBuilder);
-            }
-    });
+        e.preventDefault();
+        if(e.target.id==='start-button') {
+            showInstructions(e.target, canvas, audioBuilder);
+        }
+     });
 });
 
 const showInstructions = (startButton, canvas, audioBuilder) => {
@@ -61,7 +76,7 @@ const showInstructions = (startButton, canvas, audioBuilder) => {
 };
 
 const showGame = (startButton, canvas, audioBuilder) => {
-    const game = new GameView(canvas, audioBuilder);
+    game = new GameView(canvas, audioBuilder);
     document.getElementById('instructions-container').style.display = 'none';
     startButton.id = '';
     game.start();

@@ -2,11 +2,6 @@ html {
     background-color: black;
 }
 
-/*html, body, main {
-    height: 100vw;
-    width: 100vh;
-}*/
-
 @font-face {
     font-family: hyperspace;
     src: url('../fonts/hyperspace/hyperspace.otf');
@@ -41,7 +36,6 @@ body {
     justify-content: center;
     flex-direction: column;
     align-items: flex-start;
-    width: 453px;
     position: absolute;
     top: calc(50% - 140px);
     color: white;
@@ -51,12 +45,14 @@ body {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    margin-top: 9px;
 }
 
 .title-container h1 {
     font-family: hyperspace-bold-italic;
     text-align: end;
     font-size: 73px;
+    margin-bottom: 1px;
 }
 
 h2 {
@@ -110,8 +106,6 @@ p {
 }
 
 main {
-    /*width: auto;
-    height: 100%;*/
     position: relative;
     margin: 0 auto;
     display: flex;
@@ -273,8 +267,18 @@ button:hover {
     margin-bottom: 12px;
 }
 
+.power-ups {
+    margin-top: 13px;
+}
+
 #instructions-container img {
-    width: 145px;
+    width: 137px;
+    margin-top: 7px;
+}
+
+#instructions-container p {
+    font-family: hyperspace;
+    margin-top: 12px;
 }
 
 .instructions-info {
@@ -326,8 +330,6 @@ ul li {
    animation-duration: 200ms;
    animation-name: flash;
    animation-iteration-count: infinite;
-   /*animation-timing-function: linear;*/
-   /*animation-play-state: running;*/
    animation-direction: alternate;
 }
 @keyframes flash {
@@ -343,8 +345,6 @@ ul li {
    animation-duration: 200ms;
    animation-name: flash;
    animation-iteration-count: infinite;
-   /*animation-timing-function: linear;*/
-   /*animation-play-state: running;*/
    animation-direction: alternate;
 }
 @keyframes flash {

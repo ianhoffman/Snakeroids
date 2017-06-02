@@ -119,6 +119,10 @@ class Sprite {
 
         //don't allow ship to move offscreen
         if(this.type === 'spaceship') {
+            // if(this.fwdDecay > 0) {
+            //     this.speed -= .5; 
+            // }
+
             if(this.center.x - this.radius < 0 || this.center.x + this.radius > this.game.DIM_X) {
                 this.center.x -= this.speed * Math.sin(this.angle);
             }
@@ -323,39 +327,44 @@ class GameView {
         this.gameInterval = null;
         this.makeAsteroids = null;
         this.renderScore();
+
+
+        // handle pausing / unpausing
+        this.handlePauses = this.handlePauses.bind(this);
+        this.handlePauses();
     }
 
     animate(timestamp) {
-
-        this.now = Date.now();
-        this.delta = this.now - this.then;
-
-        if(this.delta > this.interval) {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.game.moveObjects();
-            this.game.draw(this.ctx);
-            this.then = this.now - (this.delta % this.interval);
-        }
-        
-        if(this.game.spaceShip && 
-            this.now - this.lastAsteroid > 825 - (this.game.spaceShip.sourceCount * 27)) {
-            console.log('new asteroid incoming!');
-            let pos = __WEBPACK_IMPORTED_MODULE_1__utils__["a" /* randEdge */]();
-            this.game.generateOffscreenElement({
-                x: pos.x * this.game.DIM_X,
-                y: pos.y * this.game.DIM_Y
-            }, 'asteroid');
-            this.lastAsteroid = this.now;
-        }
-        
-        if(!this.game.spaceShip && this.game.explosions.length === 0) {
-            this.gameOverMessage(false);
-            cancelAnimationFrame(this.myReq);
-            this.then = null;
-            this.now = null;
-        } 
-        else {
-            this.myReq = window.requestAnimFrame(this.animate);
+        if(!this.paused) {
+            this.now = Date.now();
+            this.delta = this.now - this.then;
+            if(this.delta > this.interval) {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.game.moveObjects();
+                this.game.draw(this.ctx);
+                this.then = this.now - (this.delta % this.interval);
+            }
+            
+            if(this.game.spaceShip && 
+                this.now - this.lastAsteroid > 825 - (this.game.spaceShip.sourceCount * 27)) {
+                console.log('new asteroid incoming!');
+                let pos = __WEBPACK_IMPORTED_MODULE_1__utils__["a" /* randEdge */]();
+                this.game.generateOffscreenElement({
+                    x: pos.x * this.game.DIM_X,
+                    y: pos.y * this.game.DIM_Y
+                }, 'asteroid');
+                this.lastAsteroid = this.now;
+            }
+            
+            if(!this.game.spaceShip && this.game.explosions.length === 0) {
+                this.gameOverMessage(false);
+                cancelAnimationFrame(this.myReq);
+                this.then = null;
+                this.now = null;
+            } 
+            else {
+                this.myReq = window.requestAnimFrame(this.animate);
+            }
         }
     }
 
@@ -398,6 +407,45 @@ class GameView {
         document.querySelectorAll('#game-over h3')[0].innerHTML = text;
         gameOverModal.style.display = 'flex';
     }
+
+    renderInstructions(e) {
+        e.preventDefault();
+        this.paused = true;
+        const titleContainer = document.getElementById('instructions-container');
+        titleContainer.style.display = 'flex';
+        const startButton = document.getElementById('start-button');
+        startButton.innerHTML = 'resume';
+
+        if (this.instructionsClicked === false) {
+            this.instructionsClicked = true;
+            startButton.addEventListener('click', e2 => {
+                this.paused = false;
+                const newStart = document.cloneNode(startButton);
+                startButton.parentElement.replaceChild(newStart, startButton);
+                this.instructionsClicked = false;
+                titleContainer.style.display = 'none';
+                this.myReq = window.requestAnimFrame(this.animate);
+            });
+        }
+    }
+
+    handlePauses() {
+        this.renderInstructions = this.renderInstructions.bind(this);
+        this.paused = false;
+        this.instructionsClicked = false; // prevent double clicks
+        document.getElementsByClassName('fa-info-circle')[0].addEventListener('click', e => {
+            this.paused = true;
+            this.renderInstructions(e);
+        });
+        document.getElementsByClassName('fa-pause')[0].addEventListener('click', e => {
+            if(!this.paused) {
+                this.paused = true;
+            } else {
+                this.paused = false;
+                window.requestAnimFrame(this.animate);
+            }
+        });
+    }
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (GameView);
@@ -413,7 +461,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-let firstEnter = true;
+var firstEnter = true;
+var secondEnter = false;
+var game;
+var gameStarted = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
@@ -434,34 +485,52 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    const displayWidth  = canvas.clientWidth;
-    const displayHeight = canvas.clientHeight;
+    let displayWidth  = canvas.clientWidth;
+    let displayHeight = canvas.clientHeight;
+    var oldWidth, delta; 
     if (canvas.width  !== displayWidth ||
         canvas.height !== displayHeight) {
         canvas.width = displayWidth;
         canvas.height = displayHeight;
     }
 
+    window.addEventListener('resize', e => {
+        e.preventDefault();
+        displayWidth  = canvas.clientWidth;
+        displayHeight = canvas.clientHeight;
+        if (canvas.width  !== displayWidth ||
+        canvas.height !== displayHeight) {
+            setTimeout(() => {
+                canvas.width = displayWidth;
+                canvas.height = displayHeight;
+                if(game) {
+                    game.game.DIM_X = canvas.width;
+                    game.game.DIM_Y = canvas.height;
+                }
+            }, 10);
+        }
+    });
 
     window.addEventListener('keypress', e => {
         if(e.keyCode === 13 && firstEnter) {
             showInstructions(document.getElementById('start-button'), canvas, audioBuilder);
-        } else if(e.keyCode) {
+        } else if(e.keyCode === 13 && secondEnter) {
             showGame(document.getElementById('start-button'), canvas, audioBuilder);
         }
     });
 
     document.getElementsByClassName('title-container')[0].addEventListener('click', e => {
-            e.preventDefault();
-            if(e.target.id==='start-button') {
-                showInstructions(e.target, canvas, audioBuilder);
-            }
-    });
+        e.preventDefault();
+        if(e.target.id==='start-button' && gameStarted === false) {
+            showInstructions(e.target, canvas, audioBuilder);
+        }
+     });
 });
 
 const showInstructions = (startButton, canvas, audioBuilder) => {
     startButton.id = '';
     firstEnter = false;
+    secondEnter = true;
     const titleContainer = startButton.parentElement;
     titleContainer.style.display = 'none';
     document.getElementsByClassName('top-links')[0].style.display = 'flex';
@@ -473,10 +542,14 @@ const showInstructions = (startButton, canvas, audioBuilder) => {
 };
 
 const showGame = (startButton, canvas, audioBuilder) => {
-    const game = new __WEBPACK_IMPORTED_MODULE_0__lib_game_view_js__["a" /* default */](canvas, audioBuilder);
-    document.getElementById('instructions-container').style.display = 'none';
-    startButton.id = '';
-    game.start();
+    if(!gameStarted) {
+        game = new __WEBPACK_IMPORTED_MODULE_0__lib_game_view_js__["a" /* default */](canvas, audioBuilder);
+        secondEnter = false;
+        gameStarted = true;
+        document.getElementsByClassName('left-links')[0].style.display = 'flex';
+        document.getElementById('instructions-container').style.display = 'none';
+        game.start();
+    }
 };
 
 
@@ -760,13 +833,17 @@ class Game {
     createInitialView() {
         for( let i = 0; i < 5; i ++ ) {
             let pos = this.generateRandomPos();
-            while((pos.x < (this.width / 2) + 40 && pos.x > (this.width / 2) - 40) && 
-            (pos.y < (this.height / 2) + 40 && pos.y > (this.height / 2) - 40)) {
+            while((pos.x < (this.DIM_X / 2) + 100 && pos.x > (this.DIM_X / 2) - 100) && 
+            (pos.y < (this.DIM_Y / 2) + 100 && pos.y > (this.DIM_Y / 2) - 100)) {
                 pos = this.generateRandomPos();
             }
             this.addAsteroid(pos);
         }
+        
         this.powerSource = new __WEBPACK_IMPORTED_MODULE_3__power_source__["a" /* default */](this.generateRandomPos());
+        while(this.atEdge(this.powerSource)) {
+            this.powerSource.teleport(this.DIM_X, this.DIM_Y);
+        }
     }
 
     generateRandomPos() {
@@ -1133,7 +1210,7 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
         this.turnSpeed = 12;
         this.bckSpeed = -8;
 
-        this.firePause = 12;
+        this.firePause = 6;
         this.bulletQueued = false;
         this.fireCountdown = 0;
 
@@ -1194,6 +1271,11 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
         });
     }
 
+    // move() {
+        
+    //     super.move();
+    // }
+
     render(ctx) {
 
         if(this.fireCountdown > 0) {
@@ -1215,7 +1297,7 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
             this.turnSpeed = 12;
             this.fwdSpeed = 12;
             this.bckSpeed = -8;
-            this.firePause = 12;
+            this.firePause = 6;
             if(this.statusBar.style.display === 'block') {
                 this.statusBar.style.display = 'none';
             }
@@ -1272,7 +1354,7 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
         this.fwdSpeed = 12;
         this.turnSpeed = 12;
         this.bckSpeed = -8;
-        this.firePause = 12;
+        this.firePause = 6;
 
         if(rand < .25) {
             this.turnSpeed *= 2;

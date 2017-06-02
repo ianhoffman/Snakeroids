@@ -148,6 +148,7 @@ class Sprite {
         );
 
         ctx.restore();
+
         this.update();
     }
 
@@ -254,8 +255,7 @@ class AudioBuilder {
   createBackgroundMusic(src) {
     this.backgroundMusic = document.createElement('audio');
     this.backgroundMusic.src = 'sounds/background-music.mp3';
-    this.backgroundMusic.volume = .5;
-    // document.body.appendChild(this.backgroundMusic);
+    this.backgroundMusic.volume = .4;
     this.backgroundMusic.onended = () => this.backgroundMusic.play();
     return this.backgroundMusic;
   }
@@ -268,7 +268,7 @@ class AudioBuilder {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__game_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__game_js__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__audio_builder__ = __webpack_require__(2);
 
@@ -319,7 +319,8 @@ class GameView {
         if(!this.then) this.then = timestamp;
         
         if(this.game.spaceShip && 
-            this.now - this.then > 500 - (this.game.spaceShip.sourceCount * 50)) {
+            this.now - this.then > 500 - (this.game.spaceShip.sourceCount * 10)) {
+            console.log('new asteroid incoming!');
             let pos = __WEBPACK_IMPORTED_MODULE_1__utils__["a" /* randEdge */]();
             this.game.generateOffscreenElement({
                 x: pos.x * this.game.DIM_X,
@@ -334,12 +335,12 @@ class GameView {
             this.then = null;
             this.now = null;
         } 
-        else if(this.game.spaceShip && this.game.spaceShip.sourceCount === 20) {
-            this.gameOverMessage(true);
-            cancelAnimationFrame(this.myReq);
-            this.then = null;
-            this.now = null;
-        } 
+        // else if(this.game.spaceShip && this.game.spaceShip.sourceCount === 20) {
+        //     this.gameOverMessage(true);
+        //     cancelAnimationFrame(this.myReq);
+        //     this.then = null;
+        //     this.now = null;
+        // } 
         else {
             this.myReq = requestAnimationFrame(this.animate);
         }
@@ -380,7 +381,6 @@ class GameView {
 
     gameOverMessage(won) {
         const text = won ? 'You win!' : 'Game over...';
-
         const gameOverModal = document.getElementById('game-over');
         document.querySelectorAll('#game-over h3')[0].innerHTML = text;
         gameOverModal.style.display = 'flex';
@@ -543,14 +543,6 @@ class Bullet {
     this.loaded = false;   
     this.onLoad = this.onLoad.bind(this);
     this.img.addEventListener('load', this.onLoad);
-
-    // this.audio = document.createElement('audio');
-    // this.audio.src = 'sounds/bullet-fired.mp3';
-    // this.audio.playRate = 2;
-    // document.body.appendChild(this.audio);
-    // this.audio.play();
-    // this.audio.onended = () => document.body.removeChild(this.audio);
-    
     this.render = this.render.bind(this);
   }
 
@@ -594,6 +586,85 @@ class Bullet {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/*
+ * Do not import 'Sprite' because, by default, Sprite uses the pos passed
+ * to it as the x, y coords for the upper left corner. This is fine for most 
+ * subclasses, as we know their orientation on initialization is true-north.
+ * However, bullet's orientation depends on the orientation of the ship, and 
+ * therefore it's best to pass it a center, rather than the coord for one of its 
+ * corners. This could be something to refactor for all classes, given time. 
+ */
+
+class FastBullet {
+  constructor(props) {
+    this.img = new Image();
+    this.img.src = 'sprites/death_ray.png';
+
+    this.x = 0;
+    this.y = 0;
+    this.width = 16;
+    this.height = 20; 
+
+    this.speed = 4;
+    this.angle = props.angle;
+    this.type = 'bullet';
+
+    this.center = {
+      x: props.x,
+      y: props.y
+    };
+
+    this.radius = Math.sqrt(
+      Math.pow((this.width/2), 2) 
+      + Math.pow((this.height/2), 2)
+    );
+
+    this.loaded = false;   
+    this.onLoad = this.onLoad.bind(this);
+    this.img.addEventListener('load', this.onLoad);
+    this.render = this.render.bind(this);
+  }
+
+  onLoad() {
+        this.loaded = true;
+  }
+
+  render(ctx) {
+        ctx.save();
+        ctx.translate(
+            this.center.x, 
+            this.center.y
+        );
+        ctx.rotate(this.angle);
+        ctx.drawImage(
+            this.img,
+            this.x,
+            this.y,
+            this.width,
+            this.height,
+            this.x - (this.width / 2),
+            this.y - (this.height / 2),
+            this.width,
+            this.height
+        );
+
+        ctx.restore();
+    }
+
+    move() {
+      this.center.x += this.speed * Math.sin(this.angle);
+      this.center.y -= this.speed * Math.cos(this.angle);
+    }
+
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (FastBullet);
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__sprite__ = __webpack_require__(0);
 
 
@@ -622,14 +693,14 @@ class Explosion extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
 /* harmony default export */ __webpack_exports__["a"] = (Explosion);
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__asteroid__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__space_ship__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__explosion__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__power_source__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__space_ship__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__explosion__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__power_source__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils__ = __webpack_require__(1);
 
 
@@ -724,6 +795,11 @@ class Game {
                     this.explosions.splice(idx, 1);
                 }
         });
+
+        if(this.rocketExhaust) {
+            this.rocketExhaust.render(ctx);
+            this.rocketExhaust = null;
+        }
 
         if(this.spaceShip && this.spaceShip.loaded) {
             this.spaceShip.render(ctx);
@@ -894,7 +970,7 @@ class Game {
 /* harmony default export */ __webpack_exports__["a"] = (Game);
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -933,12 +1009,89 @@ class PowerSource extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default *
 /* harmony default export */ __webpack_exports__["a"] = (PowerSource);
 
 /***/ }),
-/* 10 */
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/*
+ * Do not import 'Sprite' because, by default, Sprite uses the pos passed
+ * to it as the x, y coords for the upper left corner. This is fine for most 
+ * subclasses, as we know their orientation on initialization is true-north.
+ * However, rocket_exhaust's orientation depends on the orientation of the ship, and 
+ * therefore it's best to pass it a center, rather than the coord for one of its 
+ * corners. This could be something to refactor for all classes, given time. 
+ */
+
+class RocketExhaust {
+  constructor(props) {
+    this.img = new Image();
+    this.img.src = 'sprites/rocket_exhaust_transparent.png';
+
+    this.x = 0;
+    this.y = 0;
+    this.width = 19;
+    this.height = 39; 
+
+    this.speed = 4;
+    this.angle = 0;
+    this.type = 'rocketExhaust';
+
+    this.center = {
+      x: props.x,
+      y: props.y
+    };
+
+    this.radius = Math.sqrt(
+      Math.pow((this.width/2), 2) 
+      + Math.pow((this.height/2), 2)
+    );
+
+    this.loaded = false;   
+    this.onLoad = this.onLoad.bind(this);
+    this.img.addEventListener('load', this.onLoad);
+    this.render = this.render.bind(this);
+  }
+
+  onLoad() {
+        this.loaded = true;
+  }
+
+  render(ctx) {
+        ctx.save();
+        ctx.translate(
+            this.center.x, 
+            this.center.y
+        );
+        ctx.rotate(this.angle);
+        ctx.drawImage(
+            this.img,
+            this.x,
+            this.y,
+            this.width,
+            this.height,
+            this.x - (this.width / 2),
+            this.y - (this.height / 2),
+            this.width,
+            this.height
+        );
+
+        ctx.restore();
+    }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (RocketExhaust);
+
+/***/ }),
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__sprite__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__bullet__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bullet_fast__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__rocket_exhaust__ = __webpack_require__(11);
+
+
 
 
 
@@ -1075,8 +1228,13 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
 
         super.render(ctx);
         
-        if(this.sourceCount >= 4) {
-
+        if(this.fwdSpeed === 6) {
+            let rocketExhaust = new __WEBPACK_IMPORTED_MODULE_3__rocket_exhaust__["a" /* default */]({
+                x: this.center.x - (Math.sin(this.angle) * this.radius),
+                y: this.center.y + (Math.cos(this.angle) * this.radius)
+            });
+            rocketExhaust.angle = this.angle;
+            this.game.rocketExhaust = rocketExhaust;
         }
     }
 
@@ -1106,23 +1264,23 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
         if(rand < .25) {
             this.turnSpeed *= 2;
             this.status.innerHTML = 'Extra Torque';
-            this.statusInterval = 250;
+            this.statusInterval = 400;
         }
         if(rand >= .25 && rand < .5) {
-            this.fwdSpeed *= 2;
-            this.bckSpeed *= 2;
+            this.fwdSpeed = 6;
+            this.bckSpeed = -4;
             this.status.innerHTML = 'Warspeed';
-            this.statusInterval = 250;
+            this.statusInterval = 400;
         }
         if(rand >= .5 && rand < .75) {
             this.shieldsUp = true;
             this.status.innerHTML = 'Shields Up';
-            this.statusInterval = 250;
+            this.statusInterval = 400;
         }
         if(rand >= .75 && rand < 1) {
             this.firePause = 1;
             this.status.innerHTML = 'Rapid Fire';
-            this.statusInterval = 250;
+            this.statusInterval = 400;
         }
     }
 
@@ -1130,10 +1288,18 @@ class SpaceShip extends __WEBPACK_IMPORTED_MODULE_0__sprite__["a" /* default */]
         const x = this.center.x + (Math.sin(this.angle) * this.radius);
         const y = this.center.y - (Math.cos(this.angle) * this.radius);
 
-        const bullet = new __WEBPACK_IMPORTED_MODULE_1__bullet__["a" /* default */]({
-            x: x,
-            y: y
-        });
+        let bullet; 
+        if(this.firePause === 1) {
+            bullet = new __WEBPACK_IMPORTED_MODULE_2__bullet_fast__["a" /* default */]({
+                x: x,
+                y: y
+            });
+        } else {
+            bullet = new __WEBPACK_IMPORTED_MODULE_1__bullet__["a" /* default */]({
+                x: x,
+                y: y
+            });
+        }
 
         bullet.angle = this.angle;
         this.game.addBullet(bullet);

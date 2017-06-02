@@ -300,14 +300,13 @@ ul li {
 .top-links {
     display: none;
     position: absolute;
-    bottom: 0px;
+    bottom: 5px;
     right: 7px;
 }
 
 .top-links .fa-github {
     margin-right: 10px;
     margin-bottom: 2px;
-    top: -1px;
 }
 
 #game-over {

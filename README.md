@@ -106,5 +106,8 @@ I didn't have time to make AI for this project, but it'd enhance the game if, at
 
 Right now, the ship is contained on the screen. It'd be really cool if you could fly the ship towards the edges of the screen and it would scroll with you, generating more power sources if one ever moved off the screen. Or, even better, if *new* power sources generated offscreen, and an error pointed you towards them.
 
+## Asteroids mode
+
+If AI is implemented, it would be simple to toggle between Snakeroids and traditional Asteroids modes. 
 
 
